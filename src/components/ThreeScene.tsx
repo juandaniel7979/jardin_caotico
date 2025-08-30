@@ -62,16 +62,19 @@ const SceneContent: React.FC = () => {
   // Configura la posición, target y rotación inicial de la cámara
   useEffect(() => {
     if (controlsRef.current) {
-      // Posición y target iniciales
-      camera.position.set(0.64, 2.51, -0.30); // Tu posición inicial
-      controlsRef.current.target = new THREE.Vector3(1.00, 0.50, 0.00); // Tu target
+      // Valores iniciales
+      const target = new THREE.Vector3(0.28, 0.94, 0.27); // Tu target
+      const distance = 1; // Distancia desde el target (ajusta según minDistance/maxDistance)
+      const azimuthalAngle = 80 * Math.PI / 180; // Rotación Y (radianes)
+      const polarAngle = 6.25 * Math.PI / 180; // Rotación X (radianes)
 
-      // Rotación inicial: usa un enfoque indirecto
-      controlsRef.current.update();
-      // Ajusta la rotación usando los métodos internos de OrbitControls
-      // Nota: azimuthalAngle y polarAngle son internos, usamos un workaround
-      (controlsRef.current as any).azimuthalAngle = 180 * Math.PI / 180; // Rotación Y (radianes)
-      (controlsRef.current as any).polarAngle = 180 * Math.PI / 180; // Rotación X (radianes)
+      // Calcula la posición de la cámara basada en los ángulos y la distancia
+      const x = target.x + distance * Math.sin(polarAngle) * Math.cos(azimuthalAngle);
+      const y = target.y + distance * Math.cos(polarAngle);
+      const z = target.z + distance * Math.sin(polarAngle) * Math.sin(azimuthalAngle);
+
+      camera.position.set(x, y, z);
+      controlsRef.current.target = target;
       controlsRef.current.update();
     }
     // Configura fondo negro
@@ -117,9 +120,9 @@ const SceneContent: React.FC = () => {
       <OrbitControls
         ref={controlsRef}
         enablePan={true}
-        minDistance={0.05}
+        minDistance={0.02}
         maxDistance={10}
-        onChange={handleControlsChange}
+        // onChange={handleControlsChange}
       />
     </>
   );
